@@ -1,0 +1,65 @@
+<!doctype html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Fix padding in an Excellon RS-274X file</h1>
+    <div class="row align-items-center">
+      <div class="col">
+        <p>Paste input data here</p>
+        <textarea
+          class="form-control"
+          id="input"
+          rows="30"
+          style="font-family:monospace;"></textarea>
+      </div>
+      <div class="col-auto">
+        <button id="convert" class="btn">
+          Convert <span class="fa fa-caret-right"></span>
+        </button>
+      </div>
+      <div class="col">
+        <p>Recieve output here</p>
+        <textarea
+          class="form-control"
+          id="output"
+          rows="30"
+          style="font-family:monospace;"></textarea>
+      </div>
+    </div>
+  </div>
+  <script>
+    'use strict';
+    let buttonElem = document.getElementById('convert');
+    let inputElem = document.getElementById('input');
+    let outputElem = document.getElementById('output');
+    inputElem.value = '';
+    buttonElem.addEventListener('click', () => {
+      outputElem.value = convertString(inputElem.value);
+    });
+    
+    function convertString(str) {
+      let lines = str.split('\n');
+      let out = '';
+      for (let line of lines) {
+        if (line.match(/X.+Y/)) {
+          out += padXYLine(line) + '\n';
+        } else {
+          out += line + '\n';
+        }
+      }
+      return out;
+    }
+
+    function padXYLine(str) {
+      let arr = str.split(/(\d+)/);
+      let xLabel = arr[0]; // X+ or X-
+      let xCoord = arr[1].padStart(6, '0'); // E.g 000123
+      let yLabel = arr[2]; // Y+ or Y-
+      let yCoord = arr[3].padStart(6, '0'); // E.g 000123
+      return xLabel + xCoord + yLabel + yCoord;
+    }
+  </script>
+</body>
